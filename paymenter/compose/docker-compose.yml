@@ -1,0 +1,50 @@
+services:
+
+  database:
+    image: mariadb:10.5
+    restart: always
+    networks:
+      - internal
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ${DATA_DIR}/database:/var/lib/mysql
+
+  cache:
+    image: redis:alpine
+    restart: always
+    networks:
+      - internal
+
+  paymenter:
+    image: ghcr.io/paymenter/paymenter:latest
+    restart: always
+    networks:
+      - paymenter
+      - internal
+    volumes:
+      - ${DATA_DIR}/paymenter/var/:/app/var/
+      - ${DATA_DIR}/paymenter/logs/:/app/storage/logs
+    environment:
+      - DB_USERNAME=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_DATABASE=${MYSQL_DATABASE}
+      - APP_URL=https://${DOMAIN}
+    labels:
+      - "traefik.enable=true"
+      # HTTP
+      - "traefik.http.routers.${TRAEFIK_ROUTER}.entrypoints=web"
+      - "traefik.http.routers.${TRAEFIK_ROUTER}.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.${TRAEFIK_ROUTER}.middlewares=${TRAEFIK_ROUTER}_https"
+      - "traefik.http.middlewares.${TRAEFIK_ROUTER}_https.redirectscheme.scheme=https"
+      # HTTPS
+      - "traefik.http.routers.${TRAEFIK_ROUTER}-https.entrypoints=websecure"
+      - "traefik.http.routers.${TRAEFIK_ROUTER}-https.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.${TRAEFIK_ROUTER}-https.tls=true"
+      - "traefik.http.routers.${TRAEFIK_ROUTER}-https.tls.certresolver=letsencrypt"
+      - "traefik.http.services.${TRAEFIK_ROUTER}-https.loadbalancer.server.port=8080"
+
+networks:
+  paymenter:
+    external: true
+  internal:
+    external: false
