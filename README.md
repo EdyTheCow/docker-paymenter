@@ -3,15 +3,19 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/BeefBytes/Assets/refs/heads/master/Other/container_illustration/v2/dockerized_paymenter.png">
 </p>
+
 # 📚 About
 This guide show the quickest way of installing and running Paymenter in Docker in production. Original guide for Paymenter in Docker uses Nginx as proxy and cert generation, this guide shows how to set it up using Traefik reverse proxy which takes care of certificates generation and renewal. The original docker-compose.yml was also cleaned up by removing any exposed ports and moving all of sensitive and non sensitive variables to .env file instead. The only big difference is usage of Traefik instead of Nginx as proxy. 
 Original guide by Paymenter can be found here: https://paymenter.org/docs/guides/docker/
+
 # 🧰 Getting Started
 This guide assumes you have a basic knowledge of Linux and Docker / Docker Compose.
+
 ## Requirements
 - Domain
 - [Docker Engine](https://docs.docker.com/engine/install/ubuntu/)
 - Docker Compose (Docker Engine now comes with compose)
+
 ## Repository overview
 Quick overview of directory structure, services and the ideas behind why it is setup how it is.
 
@@ -47,6 +51,7 @@ git clone https://github.com/EdyTheCow/docker-paymenter.git
 ```
 
 **Environment variables**
+
 Navigate to `paymenter/compose/.env/` and edit these variables.
 
 | Variable            | Default             | Description                                                                                |
@@ -56,16 +61,19 @@ Navigate to `paymenter/compose/.env/` and edit these variables.
 | DOMAIN              | pay.your-domain.com | Domain for Paymenter. This can be either with sub domain or without                        |
 | APP_NAME            | Paymenter           | Your company / project name                                                                |
 | APP_KEY             | -                   | Encryption key                                                                             |
+
 The listed variables above are required to be changed to get Paymenter up and running. For generating encryption key for `APP_KEY` you can find more info at official documentation here: https://paymenter.org/docs/getting-started/installation/#install-composer
 
 Alternatively `APP_KEY` can be randomly generated and copy / pasted from here: https://laravel-encryption-key-generator.vercel.app/
 
 **Domain DNS records**
+
 If you're using Cloudflare, make sure to enable the proxying by enabling the cloud icon. For full end-to-end encryption, you can also enable "Full" under the SSL/TLS section in the Cloudflare panel.
 
 | Sub domain     | Record | Target         |
 | -------------- | ------ | -------------- |
 | pay.domain.com | A      | Your server IP |
+
 ## Traefik
 **Set correct acme.json permissions**
 Navigate to `_base/data/traefik/` and run
