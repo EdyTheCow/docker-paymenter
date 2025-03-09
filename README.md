@@ -70,30 +70,35 @@ Alternatively `APP_KEY` can be randomly generated and copy / pasted from here: h
 
 If you're using Cloudflare, make sure to enable the proxying by enabling the cloud icon. For full end-to-end encryption, you can also enable "Full" under the SSL/TLS section in the Cloudflare panel.
 
-| Sub domain     | Record | Target         |
+| Domain     | Record | Target         |
 | -------------- | ------ | -------------- |
 | pay.domain.com | A      | Your server IP |
 
 ## Traefik
 **Set correct acme.json permissions**
+
 Navigate to `_base/data/traefik/` and run
 ```bash
 sudo chmod 600 acme.json
 ```
 
 **Create docker network for Paymenter**
+
 Run command to create Docker network "paymenter". This will be used by Traefik.
 ```bash
 docker network create paymenter
 ```
 
 **Start docker compose**  
+
 Inside of `_base/compose` run
 ```bash
 docker-compose up -d
 ```
 ## Paymenter
+
 **Start docker compose**
+
 Navigate to `paymenter/compose/` and run
 ```bash
 docker compose up -d --force-recreate
@@ -102,6 +107,7 @@ docker compose run --rm paymenter php artisan migrate --force --seed
 This will start docker containers and generate required data in the database.
 
 **Create user**
+
 Navigate to `paymenter/compose/` and run
 ```bash
 docker compose run --rm paymenter php artisan p:user:create
