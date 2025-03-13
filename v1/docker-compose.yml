@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  paymenter:
+    image: v1-paymenter
+    env_file:
+      - .env
+    environment:
+      - DB_USERNAME=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_DATABASE=${MYSQL_DATABASE}
+      - APP_URL=https://${DOMAIN}
+    #volumes:
+    #  - ${DATA_DIR}/mysql:/var/lib/mysql
+    networks:
+      - internal
+
+  database:
+    image: mariadb:10.5
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - internal
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ${DATA_DIR}/database:/var/lib/mysql
+
+  cache:
+    image: redis:alpine
+    restart: always
+    networks:
+      - internal
+
+networks:
+  #paymenter:
+  #  external: true
+  internal:
+    external: false
